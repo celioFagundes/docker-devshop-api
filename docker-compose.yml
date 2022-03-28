@@ -1,0 +1,37 @@
+version: '3.8'
+services:
+  db:
+    image: postgres
+    container_name: devshop-db-container
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=devshop-docker
+    volumes: 
+      - pgdata:/data/postgres
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - 5454:5454/tcp
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@mydomain.com
+      - PGADMIN_DEFAULT_PASSWORD=postgres
+      - PGADMIN_LISTEN_PORT=5454
+  api:
+    build: .
+    image: devshop-api-image
+    container_name: devshop-api-container
+    ports: 
+      - 3000:3000
+    volumes:
+      - .:/usr/app
+    links:
+      - db
+    depends_on:
+      - db
+volumes:
+  pgdata:
+    driver: local
